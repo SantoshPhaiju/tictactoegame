@@ -4,6 +4,7 @@ let drawMusic = new Audio("drawmusic.mp3");
 
 let turn = "X";
 let gameover = false;
+let win = false;
 
 // function to change the turn
 const changeTurn = () => {
@@ -33,22 +34,15 @@ const checkWin = () => {
     ) {
       document.getElementById("info").innerText =
         boxtexts[e[0]].innerText + " Won";
-      wonMusic.play();
-      gameover = true;
-      document
-        .querySelector(".imgBox")
-        .getElementsByTagName("img")[0].style.width = "300px";
-
+      win = true;
       document.querySelector(
         ".line"
       ).style.transform = `rotate(${e[5]}deg) translate(${e[3]}vw, ${e[4]}vw) `;
       document.querySelector(".line").style.width = `30vw`;
+      return win;
     }
   });
-  if (!options.includes("")) {
-    drawMusic.play();
-    alert("Game Draw");
-  }
+  return win;
 };
 
 // Game Logic
@@ -56,13 +50,25 @@ let boxes = document.getElementsByClassName("box");
 Array.from(boxes).forEach((element, index) => {
   let boxtext = element.querySelector(".boxtext");
   element.addEventListener("click", () => {
-    // console.log(options);
     if (boxtext.innerText === "") {
       options[index] = turn;
       boxtext.innerText = turn;
       turn = changeTurn();
       turnMusic.play();
-      checkWin();
+      let winGame = checkWin();
+      // console.log(winGame);
+      if (winGame === true) {
+        wonMusic.play();
+        gameover = true;
+        win = false;
+        document
+          .querySelector(".imgBox")
+          .getElementsByTagName("img")[0].style.width = "300px";
+      } else if (!options.includes("")) {
+        win = false;
+        drawMusic.play();
+        alert("Game Draw");
+      }
       if (!gameover) {
         document.getElementById("info").innerText = `Turn for ${turn}`;
       }
@@ -80,6 +86,7 @@ document.getElementById("reset").addEventListener("click", () => {
   wonMusic.pause();
   drawMusic.pause();
   turn = "X";
+  win = false;
   document.getElementById("info").innerText = `Turn for ${turn}`;
   document.querySelector(".imgBox").getElementsByTagName("img")[0].style.width =
     "0px";
